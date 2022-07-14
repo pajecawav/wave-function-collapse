@@ -17,7 +17,8 @@
 	"dependencies": {
 		"is-ci": "^3.0.1",
 		"jotai": "^1.7.4",
-		"preact": "^10.9.0"
+		"preact": "^10.10.0",
+		"wouter-preact": "2.8.0-alpha.2"
 	},
 	"devDependencies": {
 		"@preact/preset-vite": "^2.3.0",

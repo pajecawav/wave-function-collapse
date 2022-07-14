@@ -5,7 +5,7 @@ const GRID_SIZE = 10;
 export type TileValue = "A" | "B" | "C" | "D";
 
 // Alphabetical order
-const TILES: Tile[] = [
+export const TILES: Tile[] = [
 	{
 		value: "A",
 		north: new Set(["A"]),
