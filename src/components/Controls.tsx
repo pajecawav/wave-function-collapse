@@ -1,8 +1,9 @@
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { ComponentChild } from "preact";
 import { useEffect } from "preact/hooks";
 import { Link, useRoute } from "wouter-preact";
 import {
+	gridSizeAtom,
 	runningAtom,
 	showPossibilitiesAtom,
 	stepIntervalAtom,
@@ -34,10 +35,11 @@ function NavLink({
 }
 
 export function Controls() {
-	const [, step] = useAtom(wfcStepAtom);
-	const [, reset] = useAtom(resetGridAtom);
+	const step = useSetAtom(wfcStepAtom);
+	const reset = useSetAtom(resetGridAtom);
 
 	const [running, setRunning] = useAtom(runningAtom);
+	const [gridSize, setGridSize] = useAtom(gridSizeAtom);
 	const [showPossibilities, setShowPossibilities] = useAtom(
 		showPossibilitiesAtom
 	);
@@ -58,8 +60,12 @@ export function Controls() {
 		return () => clearTimeout(id);
 	}, [running, step, stepInterval]);
 
+	useEffect(() => {
+		reset();
+	}, [gridSize]);
+
 	return (
-		<div className="mx-4 h-80 flex flex-col gap-2 justify-around">
+		<div className="mx-4 flex flex-col gap-10">
 			<div className="flex gap-2">
 				<NavLink href="/">Grid</NavLink>
 				<NavLink href="/tiles">Tiles</NavLink>
@@ -75,6 +81,22 @@ export function Controls() {
 						}
 					/>{" "}
 					Show possibilities
+				</label>
+
+				<label>
+					Grid size{" "}
+					<input
+						className="w-full"
+						type="range"
+						min="4"
+						max="20"
+						value={gridSize}
+						onChange={e => setGridSize(+e.currentTarget.value)}
+					/>
+					<div className="text-neutral-600 flex justify-between">
+						<span>4</span>
+						<span>20</span>
+					</div>
 				</label>
 
 				<label>

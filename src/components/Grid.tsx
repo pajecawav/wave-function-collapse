@@ -11,7 +11,7 @@ export function Grid() {
 	return (
 		<div
 			// TODO: looks like there is no good way for an element to fill it's parent while preserving aspect-ratio
-			className="m-auto w-[min(100vw-16rem-4rem,100vh-4rem)] max-w-3xl aspect-square grid gap-1"
+			className="m-auto w-[min(100vw-16rem-4rem,100vh-4rem)] max-w-5xl aspect-square grid gap-1"
 			style={{
 				gridTemplateColumns: `repeat(${grid.size}, 1fr)`,
 				gridTemplateRows: `repeat(${grid.size}, 1fr)`,

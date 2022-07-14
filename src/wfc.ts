@@ -1,6 +1,5 @@
 import { atom } from "jotai";
-
-const GRID_SIZE = 10;
+import { gridSizeAtom, INITIAL_GRID_SIZE } from "./settings";
 
 export type TileValue = "A" | "B" | "C" | "D";
 
@@ -36,7 +35,7 @@ export const TILES: Tile[] = [
 	},
 ];
 
-export const gridAtom = atom(createGrid(GRID_SIZE));
+export const gridAtom = atom<Grid>(createGrid(INITIAL_GRID_SIZE));
 
 export const wfcStepAtom = atom(null, (get, set) => {
 	const grid = get(gridAtom);
@@ -70,8 +69,8 @@ export const wfcStepAtom = atom(null, (get, set) => {
 	set(gridAtom, { ...grid, cells: cells.slice() });
 });
 
-export const resetGridAtom = atom(null, (_, set) => {
-	set(gridAtom, createGrid(GRID_SIZE));
+export const resetGridAtom = atom(null, (get, set) => {
+	set(gridAtom, createGrid(get(gridSizeAtom)));
 });
 
 function createGrid(size: number): Grid {
