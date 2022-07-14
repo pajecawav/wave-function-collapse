@@ -65,7 +65,7 @@ export function Controls() {
 	}, [gridSize]);
 
 	return (
-		<div className="mx-4 flex flex-col gap-10">
+		<div className="flex flex-col gap-10">
 			<div className="flex gap-2">
 				<NavLink href="/">Grid</NavLink>
 				<NavLink href="/tiles">Tiles</NavLink>
