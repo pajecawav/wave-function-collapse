@@ -115,13 +115,13 @@ export function Controls() {
 					<input
 						className="w-full"
 						type="range"
-						min="100"
+						min="50"
 						max="2000"
 						value={stepInterval}
 						onChange={e => setStepInterval(+e.currentTarget.value)}
 					/>
 					<div className="text-neutral-600 flex justify-between">
-						<span>0.1s</span>
+						<span>50ms</span>
 						<span>2s</span>
 					</div>
 				</label>

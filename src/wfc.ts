@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { gridSizeAtom, INITIAL_GRID_SIZE } from "./settings";
 import { TILES } from "./tiles";
 import { Cell, Direction, Grid } from "./types";
-import { choice, reversed } from "./utils";
+import { choice, reversed, weightedChoice } from "./utils";
 
 const REVERSE_DIRECTIONS: Record<Direction, Direction> = {
 	north: "south",
@@ -83,7 +83,7 @@ export function isCellCollapsed(cell: Cell): boolean {
 }
 
 function collapseCell(cell: Cell) {
-	const tile = choice(cell.options);
+	const tile = weightedChoice(cell.options, option => option.weight);
 	cell.tile = tile;
 	cell.options = [];
 }

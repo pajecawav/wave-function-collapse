@@ -6,12 +6,14 @@ const MAGIC_SCALE = 1.05;
 
 const green = "green";
 const brown = "#9b7653";
+const blue = "blue";
 const strokeWidth = 5;
 
 export const TILES: Tile[] = [
 	{
 		Component: Dirt,
 		rotation: 0,
+		weight: 4,
 		north: "DDD",
 		east: "DDD",
 		south: "DDD",
@@ -20,14 +22,27 @@ export const TILES: Tile[] = [
 	{
 		Component: Grass,
 		rotation: 0,
+		weight: 4,
 		north: "GGG",
 		east: "GGG",
 		south: "GGG",
 		west: "GGG",
 	},
 	{
+		Component: Water,
+		rotation: 0,
+		weight: 4,
+		north: "WWW",
+		east: "WWW",
+		south: "WWW",
+		west: "WWW",
+	},
+
+	// DirtWithGrassCorner
+	{
 		Component: DirtWithGrassCorner,
 		rotation: 0,
+		weight: 1,
 		north: "GBD",
 		east: "DDD",
 		south: "DDD",
@@ -36,6 +51,7 @@ export const TILES: Tile[] = [
 	{
 		Component: DirtWithGrassCorner,
 		rotation: 90,
+		weight: 1,
 		north: "DBG",
 		east: "GBD",
 		south: "DDD",
@@ -44,6 +60,7 @@ export const TILES: Tile[] = [
 	{
 		Component: DirtWithGrassCorner,
 		rotation: 180,
+		weight: 1,
 		north: "DDD",
 		east: "DBG",
 		south: "GBD",
@@ -52,14 +69,132 @@ export const TILES: Tile[] = [
 	{
 		Component: DirtWithGrassCorner,
 		rotation: 270,
+		weight: 1,
 		north: "DDD",
 		east: "DDD",
 		south: "DBG",
 		west: "GBD",
 	},
+
+	// GrassWithDirtCorner
+	{
+		Component: GrassWithDirtCorner,
+		rotation: 0,
+		weight: 1,
+		north: "DBG",
+		east: "GGG",
+		south: "GGG",
+		west: "GBD",
+	},
+	{
+		Component: GrassWithDirtCorner,
+		rotation: 90,
+		weight: 1,
+		north: "GBD",
+		east: "DBG",
+		south: "GGG",
+		west: "GGG",
+	},
+	{
+		Component: GrassWithDirtCorner,
+		rotation: 180,
+		weight: 1,
+		north: "GGG",
+		east: "GBD",
+		south: "DBG",
+		west: "GGG",
+	},
+	{
+		Component: GrassWithDirtCorner,
+		rotation: 270,
+		weight: 1,
+		north: "GGG",
+		east: "GGG",
+		south: "GBD",
+		west: "DBG",
+	},
+
+	// GrassWithWaterCorner
+	{
+		Component: GrassWithWaterCorner,
+		rotation: 0,
+		weight: 1,
+		north: "WBG",
+		east: "GGG",
+		south: "GGG",
+		west: "GBW",
+	},
+	{
+		Component: GrassWithWaterCorner,
+		rotation: 90,
+		weight: 1,
+		north: "GBW",
+		east: "WBG",
+		south: "GGG",
+		west: "GGG",
+	},
+	{
+		Component: GrassWithWaterCorner,
+		rotation: 180,
+		weight: 1,
+		north: "GGG",
+		east: "GBW",
+		south: "WBG",
+		west: "GGG",
+	},
+	{
+		Component: GrassWithWaterCorner,
+		rotation: 270,
+		weight: 1,
+		north: "GGG",
+		east: "GGG",
+		south: "GBW",
+		west: "WBG",
+	},
+
+	// WaterWithGrassCorner
+	{
+		Component: WaterWithGrassCorner,
+		rotation: 0,
+		weight: 1,
+		north: "GBW",
+		east: "WWW",
+		south: "WWW",
+		west: "WBG",
+	},
+	{
+		Component: WaterWithGrassCorner,
+		rotation: 90,
+		weight: 1,
+		north: "WBG",
+		east: "GBW",
+		south: "WWW",
+		west: "WWW",
+	},
+	{
+		Component: WaterWithGrassCorner,
+		rotation: 180,
+		weight: 1,
+		north: "WWW",
+		east: "WBG",
+		south: "GBW",
+		west: "WWW",
+	},
+	{
+		Component: WaterWithGrassCorner,
+		rotation: 270,
+		weight: 1,
+		north: "WWW",
+		east: "WWW",
+		south: "WBG",
+		west: "GBW",
+	},
+
+	// DirtWithTwoGrassCorners
 	{
 		Component: DirtWithTwoGrassCorners,
 		rotation: 0,
+		weight: 1,
 		north: "GBD",
 		east: "DBG",
 		south: "GBD",
@@ -68,14 +203,38 @@ export const TILES: Tile[] = [
 	{
 		Component: DirtWithTwoGrassCorners,
 		rotation: 90,
+		weight: 1,
 		north: "DBG",
 		east: "GBD",
 		south: "DBG",
 		west: "GBD",
 	},
+
+	// GrassWithTwoWaterCorners
+	{
+		Component: GrassWithTwoWaterCorners,
+		rotation: 0,
+		weight: 1,
+		north: "WBG",
+		east: "GBW",
+		south: "WBG",
+		west: "GBW",
+	},
+	{
+		Component: GrassWithTwoWaterCorners,
+		rotation: 90,
+		weight: 1,
+		north: "GBW",
+		east: "WBG",
+		south: "GBW",
+		west: "WBG",
+	},
+
+	// HalfsDirtGrass
 	{
 		Component: HalfsDirtGrass,
 		rotation: 0,
+		weight: 2,
 		north: "DDD",
 		east: "DBG",
 		south: "GGG",
@@ -84,6 +243,7 @@ export const TILES: Tile[] = [
 	{
 		Component: HalfsDirtGrass,
 		rotation: 90,
+		weight: 2,
 		north: "GBD",
 		east: "DDD",
 		south: "DBG",
@@ -92,6 +252,7 @@ export const TILES: Tile[] = [
 	{
 		Component: HalfsDirtGrass,
 		rotation: 180,
+		weight: 2,
 		north: "GGG",
 		east: "GBD",
 		south: "DDD",
@@ -100,10 +261,49 @@ export const TILES: Tile[] = [
 	{
 		Component: HalfsDirtGrass,
 		rotation: 270,
+		weight: 2,
 		north: "DBG",
 		east: "GGG",
 		south: "GBD",
 		west: "DDD",
+	},
+
+	// HalfsGrassWater
+	{
+		Component: HalfsGrassWater,
+		rotation: 0,
+		weight: 2,
+		north: "GGG",
+		east: "GBW",
+		south: "WWW",
+		west: "WBG",
+	},
+	{
+		Component: HalfsGrassWater,
+		rotation: 90,
+		weight: 1,
+		north: "WBG",
+		east: "GGG",
+		south: "GBW",
+		west: "WWW",
+	},
+	{
+		Component: HalfsGrassWater,
+		rotation: 180,
+		weight: 2,
+		north: "WWW",
+		east: "WBG",
+		south: "GGG",
+		west: "GBW",
+	},
+	{
+		Component: HalfsGrassWater,
+		rotation: 270,
+		weight: 2,
+		north: "GBW",
+		east: "WWW",
+		south: "WBG",
+		west: "GGG",
 	},
 ];
 
@@ -198,10 +398,45 @@ function Grass() {
 	);
 }
 
+function Water() {
+	return (
+		<Container>
+			<Background color={blue} />
+		</Container>
+	);
+}
+
 function DirtWithGrassCorner({ rotation }: { rotation: number }) {
 	return (
 		<Container rotation={rotation}>
 			<Background color={brown} />
+			<Corner color={green} />
+		</Container>
+	);
+}
+
+function GrassWithDirtCorner({ rotation }: { rotation: number }) {
+	return (
+		<Container rotation={rotation}>
+			<Background color={green} />
+			<Corner color={brown} />
+		</Container>
+	);
+}
+
+function GrassWithWaterCorner({ rotation }: { rotation: number }) {
+	return (
+		<Container rotation={rotation}>
+			<Background color={green} />
+			<Corner color={blue} />
+		</Container>
+	);
+}
+
+function WaterWithGrassCorner({ rotation }: { rotation: number }) {
+	return (
+		<Container rotation={rotation}>
+			<Background color={blue} />
 			<Corner color={green} />
 		</Container>
 	);
@@ -217,11 +452,31 @@ function DirtWithTwoGrassCorners({ rotation }: { rotation: number }) {
 	);
 }
 
+function GrassWithTwoWaterCorners({ rotation }: { rotation: number }) {
+	return (
+		<Container rotation={rotation}>
+			<Background color={green} />
+			<Corner color={blue} />
+			<OppositeCorner color={blue} />
+		</Container>
+	);
+}
+
 function HalfsDirtGrass({ rotation }: { rotation: number }) {
 	return (
 		<Container rotation={rotation}>
 			<Half color={brown} />
 			<OppositeHalf color={green} />
+			<HalfStroke />
+		</Container>
+	);
+}
+
+function HalfsGrassWater({ rotation }: { rotation: number }) {
+	return (
+		<Container rotation={rotation}>
+			<Half color={green} />
+			<OppositeHalf color={blue} />
 			<HalfStroke />
 		</Container>
 	);

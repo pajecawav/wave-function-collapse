@@ -18,4 +18,5 @@ export interface Cell {
 export interface Tile extends Record<Direction, Edge> {
 	Component: FunctionComponent<{ rotation: number }>;
 	rotation: number;
+	weight: number;
 }
