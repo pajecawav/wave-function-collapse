@@ -36,6 +36,13 @@ export const TILES: Tile[] = [
 	},
 ];
 
+const REVERSE_DIRECTIONS: Record<Direction, Direction> = {
+	north: "south",
+	south: "north",
+	east: "west",
+	west: "east",
+};
+
 export const gridAtom = atom<Grid>(createGrid(INITIAL_GRID_SIZE));
 
 export const wfcStepAtom = atom(null, (get, set, target: number | null) => {
@@ -118,87 +125,62 @@ function propagate(grid: Grid, index: number) {
 		return;
 	}
 
-	const [x, y] = indexToXY(index, grid.size);
+	collapseNeighbor(grid, index, "north");
+	collapseNeighbor(grid, index, "east");
+	collapseNeighbor(grid, index, "south");
+	collapseNeighbor(grid, index, "west");
+}
 
+function collapseNeighbor(grid: Grid, index: number, direction: Direction) {
+	const [, y] = indexToXY(index, grid.size);
+	let otherIndex;
+
+	// calculate neighbor index and check bounds
+	if (direction === "north") {
+		otherIndex = index - grid.size;
+		if (otherIndex < 0) {
+			return;
+		}
+	} else if (direction === "east") {
+		otherIndex = index + 1;
+		const [, otherY] = indexToXY(otherIndex, grid.size);
+		if (y !== otherY) {
+			return;
+		}
+	} else if (direction === "south") {
+		otherIndex = index + grid.size;
+		if (otherIndex >= grid.size * grid.size) {
+			return;
+		}
+	} else if (direction === "west") {
+		otherIndex = index - 1;
+		const [, otherY] = indexToXY(otherIndex, grid.size);
+		if (y !== otherY) {
+			return;
+		}
+	} else {
+		throw new Error(`Unknown direction ${direction}`);
+	}
+
+	const cell = grid.cells[index];
 	const options = cell.tile ? [cell.tile] : [...cell.options];
 	const values = options.map(option => option.value);
 
-	// north
-	const northIndex = index - grid.size;
-	if (northIndex >= 0) {
-		const northCell = grid.cells[northIndex];
-		const optionsCount = northCell.options.length;
+	const reverseDirection = REVERSE_DIRECTIONS[direction];
 
-		northCell.options = northCell.options.filter(option =>
-			values.some(value => option.south.has(value))
-		);
-		northCell.options = northCell.options.filter(option =>
-			options.some(o => o.north.has(option.value))
-		);
+	const other = grid.cells[otherIndex];
+	const optionsCount = other.options.length;
 
-		if (northCell.options.length !== optionsCount) {
-			propagate(grid, northIndex);
-			northCell.lastUpdated = grid.generation;
-		}
-	}
+	other.options = other.options.filter(option =>
+		values.some(value => option[reverseDirection].has(value))
+	);
+	other.options = other.options.filter(option =>
+		options.some(o => o[direction].has(option.value))
+	);
 
-	// east
-	const eastIndex = index + 1;
-	const [, eastY] = indexToXY(eastIndex, grid.size);
-	if (y === eastY) {
-		const eastCell = grid.cells[eastIndex];
-		const optionsCount = eastCell.options.length;
-
-		eastCell.options = eastCell.options.filter(option =>
-			values.some(value => option.west.has(value))
-		);
-		eastCell.options = eastCell.options.filter(option =>
-			options.some(o => o.east.has(option.value))
-		);
-
-		if (eastCell.options.length !== optionsCount) {
-			propagate(grid, eastIndex);
-			eastCell.lastUpdated = grid.generation;
-		}
-	}
-
-	// south
-	const southIndex = index + grid.size;
-	if (southIndex < grid.size * grid.size) {
-		const southCell = grid.cells[southIndex];
-		const optionsCount = southCell.options.length;
-
-		southCell.options = southCell.options.filter(option =>
-			values.some(value => option.north.has(value))
-		);
-		southCell.options = southCell.options.filter(option =>
-			options.some(o => o.south.has(option.value))
-		);
-
-		if (southCell.options.length !== optionsCount) {
-			propagate(grid, southIndex);
-			southCell.lastUpdated = grid.generation;
-		}
-	}
-
-	// west
-	const westIndex = index - 1;
-	const [, westY] = indexToXY(westIndex, grid.size);
-	if (y === westY) {
-		const westCell = grid.cells[westIndex];
-		const optionsCount = westCell.options.length;
-
-		westCell.options = westCell.options.filter(option =>
-			values.some(value => option.east.has(value))
-		);
-		westCell.options = westCell.options.filter(option =>
-			options.some(o => o.west.has(option.value))
-		);
-
-		if (westCell.options.length !== optionsCount) {
-			propagate(grid, westIndex);
-			westCell.lastUpdated = grid.generation;
-		}
+	if (other.options.length !== optionsCount) {
+		propagate(grid, otherIndex);
+		other.lastUpdated = grid.generation;
 	}
 }
 
@@ -209,6 +191,8 @@ function indexToXY(index: number, size: number): [number, number] {
 function xyToIndex(x: number, y: number, size: number): number {
 	return y * size + x;
 }
+
+export type Direction = "north" | "east" | "south" | "west";
 
 export interface Grid {
 	cells: ReadonlyArray<Cell>;
@@ -222,10 +206,6 @@ export interface Cell {
 	lastUpdated: number;
 }
 
-export interface Tile {
+export interface Tile extends Record<Direction, Set<TileValue>> {
 	value: TileValue;
-	north: Set<TileValue>;
-	east: Set<TileValue>;
-	south: Set<TileValue>;
-	west: Set<TileValue>;
 }

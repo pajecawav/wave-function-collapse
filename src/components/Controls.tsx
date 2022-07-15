@@ -129,7 +129,7 @@ export function Controls() {
 
 			<div className="flex gap-2">
 				<Button onClick={() => setRunning(!running)}>
-					{running ? "Stop" : "Run"}
+					{running ? "Pause" : "Run"}
 				</Button>
 				<Button onClick={() => step(null)} disabled={running}>
 					Step
