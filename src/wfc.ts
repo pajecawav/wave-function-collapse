@@ -41,30 +41,36 @@ export const wfcStepAtom = atom(null, (get, set) => {
 	const grid = get(gridAtom);
 	const cells = grid.cells;
 
-	const nonCollapsedCellIndexes = cells
-		.map((_, i) => i)
-		.filter(i => !isCellCollapsed(cells[i]) && cells[i].options.length > 0);
+	let iterations = 0;
+	while (true) {
+		const nonCollapsedCellIndexes = cells
+			.map((_, i) => i)
+			.filter(i => !isCellCollapsed(cells[i]));
 
-	const min = Math.min(
-		...nonCollapsedCellIndexes.map(i => cells[i].options.length)
-	);
-	const candidateIndexes = nonCollapsedCellIndexes.filter(
-		i => cells[i].options.length === min
-	);
+		const min = Math.min(
+			...nonCollapsedCellIndexes.map(i => cells[i].options.length)
+		);
+		const candidateIndexes = nonCollapsedCellIndexes.filter(
+			i => cells[i].options.length === min
+		);
 
-	// TODO: stop execution?
-	if (candidateIndexes.length === 0) {
-		return;
+		if ((iterations > 0 && min > 1) || candidateIndexes.length === 0) {
+			break;
+		}
+
+		// collapse cell
+		const index =
+			candidateIndexes[
+				Math.floor(Math.random() * candidateIndexes.length)
+			];
+		const cell = cells[index];
+		collapseCell(cell);
+
+		// propagate changes
+		propagate(grid, index);
+
+		iterations++;
 	}
-
-	// collapse cell
-	const index =
-		candidateIndexes[Math.floor(Math.random() * candidateIndexes.length)];
-	const cell = cells[index];
-	selectRandomOption(cell);
-
-	// propagate changes
-	propagate(grid, index);
 
 	set(gridAtom, { ...grid, cells: cells.slice() });
 });
@@ -91,10 +97,10 @@ function createEmptyCell(): Cell {
 }
 
 export function isCellCollapsed(cell: Cell): boolean {
-	return cell.tile !== null;
+	return cell.tile !== null || cell.options.length === 0;
 }
 
-function selectRandomOption(cell: Cell) {
+function collapseCell(cell: Cell) {
 	const tile = cell.options[Math.floor(Math.random() * cell.options.length)];
 	cell.tile = tile;
 	cell.options = [];
@@ -103,14 +109,13 @@ function selectRandomOption(cell: Cell) {
 function propagate(grid: Grid, index: number) {
 	const cell = grid.cells[index];
 
-	if (cell.options.length === 1) {
-		selectRandomOption(cell);
+	if (!cell.tile && cell.options.length === 0) {
+		return;
 	}
 
 	const [x, y] = indexToXY(index, grid.size);
 
 	const options = cell.tile ? [cell.tile] : [...cell.options];
-
 	const values = options.map(option => option.value);
 
 	// north
@@ -120,8 +125,10 @@ function propagate(grid: Grid, index: number) {
 		const optionsCount = northCell.options.length;
 
 		northCell.options = northCell.options.filter(option =>
-			// option.south.has(value)
 			values.some(value => option.south.has(value))
+		);
+		northCell.options = northCell.options.filter(option =>
+			options.some(o => o.north.has(option.value))
 		);
 
 		if (northCell.options.length !== optionsCount) {
@@ -139,6 +146,9 @@ function propagate(grid: Grid, index: number) {
 		eastCell.options = eastCell.options.filter(option =>
 			values.some(value => option.west.has(value))
 		);
+		eastCell.options = eastCell.options.filter(option =>
+			options.some(o => o.east.has(option.value))
+		);
 
 		if (eastCell.options.length !== optionsCount) {
 			propagate(grid, eastIndex);
@@ -148,11 +158,14 @@ function propagate(grid: Grid, index: number) {
 	// south
 	const southIndex = index + grid.size;
 	if (southIndex < grid.size * grid.size) {
-		const southCell = grid.cells[eastIndex];
+		const southCell = grid.cells[southIndex];
 		const optionsCount = southCell.options.length;
 
 		southCell.options = southCell.options.filter(option =>
 			values.some(value => option.north.has(value))
+		);
+		southCell.options = southCell.options.filter(option =>
+			options.some(o => o.south.has(option.value))
 		);
 
 		if (southCell.options.length !== optionsCount) {
@@ -169,6 +182,9 @@ function propagate(grid: Grid, index: number) {
 
 		westCell.options = westCell.options.filter(option =>
 			values.some(value => option.east.has(value))
+		);
+		westCell.options = westCell.options.filter(option =>
+			options.some(o => o.west.has(option.value))
 		);
 
 		if (westCell.options.length !== optionsCount) {
