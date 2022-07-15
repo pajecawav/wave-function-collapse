@@ -26,8 +26,8 @@ function NavLink({
 		<Link
 			href={href}
 			className={cn(
-				"px-2 py-1 rounded-md transition-colors hover:bg-neutral-200",
-				match && "bg-neutral-200"
+				"px-4 py-1 rounded-md transition-colors hover:bg-sky-100",
+				match ? "bg-sky-100" : "text-neutral-800"
 			)}
 		>
 			{children}
@@ -116,13 +116,13 @@ export function Controls() {
 						className="w-full"
 						type="range"
 						min="100"
-						max="3000"
+						max="2000"
 						value={stepInterval}
 						onChange={e => setStepInterval(+e.currentTarget.value)}
 					/>
 					<div className="text-neutral-600 flex justify-between">
 						<span>0.1s</span>
-						<span>3s</span>
+						<span>2s</span>
 					</div>
 				</label>
 			</div>

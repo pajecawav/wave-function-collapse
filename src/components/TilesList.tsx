@@ -16,7 +16,7 @@ function TileVisualization({ tile }: { tile: Tile }) {
 
 export function TilesList() {
 	return (
-		<div className="grid grid-cols-[repeat(auto-fit,minmax(10rem,8rem))] justify-center gap-8">
+		<div className="p-8 grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] justify-center gap-8">
 			{TILES.map(tile => (
 				<TileVisualization tile={tile} key={tile.value} />
 			))}
