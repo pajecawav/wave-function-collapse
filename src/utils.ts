@@ -5,3 +5,7 @@ export function cn(...values: any[]): string {
 export function choice<T>(arr: T[]): T {
 	return arr[Math.floor(arr.length * Math.random())];
 }
+
+export function reversed(s: string): string {
+	return [...s].reverse().join("");
+}

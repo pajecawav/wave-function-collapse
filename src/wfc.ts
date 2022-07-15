@@ -1,40 +1,8 @@
 import { atom } from "jotai";
 import { gridSizeAtom, INITIAL_GRID_SIZE } from "./settings";
-import { choice } from "./utils";
-
-export type TileValue = "A" | "B" | "C" | "D";
-
-// Alphabetical order
-export const TILES: Tile[] = [
-	{
-		value: "A",
-		north: new Set(["A"]),
-		east: new Set(["A", "B"]),
-		south: new Set(["A", "B"]),
-		west: new Set(["A"]),
-	},
-	{
-		value: "B",
-		north: new Set(["A", "B"]),
-		east: new Set(["B", "C"]),
-		south: new Set(["B", "C"]),
-		west: new Set(["A", "B"]),
-	},
-	{
-		value: "C",
-		north: new Set(["B", "C"]),
-		east: new Set(["C", "D"]),
-		south: new Set(["C", "D"]),
-		west: new Set(["B", "C"]),
-	},
-	{
-		value: "D",
-		north: new Set(["C", "D"]),
-		east: new Set(["D"]),
-		south: new Set(["D"]),
-		west: new Set(["C", "D"]),
-	},
-];
+import { TILES } from "./tiles";
+import { Cell, Direction, Grid } from "./types";
+import { choice, reversed } from "./utils";
 
 const REVERSE_DIRECTIONS: Record<Direction, Direction> = {
 	north: "south",
@@ -94,12 +62,14 @@ export const resetGridAtom = atom(null, (get, set) => {
 function createGrid(size: number): Grid {
 	const cells = Array.from({ length: size * size }, createEmptyCell);
 
-	const grid: Grid = { cells, size, generation: 0 };
+	const grid: Grid = { cells, size, generation: -1 };
 
 	// TODO: how to properly implement initial propagation?
 	for (let i = 0; i < size; i++) {
 		propagate(grid, i);
 	}
+
+	grid.generation = 0;
 
 	return grid;
 }
@@ -164,7 +134,7 @@ function collapseNeighbor(grid: Grid, index: number, direction: Direction) {
 
 	const cell = grid.cells[index];
 	const options = cell.tile ? [cell.tile] : [...cell.options];
-	const values = options.map(option => option.value);
+	const edges = options.map(option => option[direction]);
 
 	const reverseDirection = REVERSE_DIRECTIONS[direction];
 
@@ -172,10 +142,10 @@ function collapseNeighbor(grid: Grid, index: number, direction: Direction) {
 	const optionsCount = other.options.length;
 
 	other.options = other.options.filter(option =>
-		values.some(value => option[reverseDirection].has(value))
+		edges.some(edge => option[reverseDirection] === reversed(edge))
 	);
 	other.options = other.options.filter(option =>
-		options.some(o => o[direction].has(option.value))
+		options.some(o => o[direction] === reversed(option[reverseDirection]))
 	);
 
 	if (other.options.length !== optionsCount) {
@@ -190,22 +160,4 @@ function indexToXY(index: number, size: number): [number, number] {
 
 function xyToIndex(x: number, y: number, size: number): number {
 	return y * size + x;
-}
-
-export type Direction = "north" | "east" | "south" | "west";
-
-export interface Grid {
-	cells: ReadonlyArray<Cell>;
-	size: number;
-	generation: number;
-}
-
-export interface Cell {
-	tile: Tile | null;
-	options: Tile[];
-	lastUpdated: number;
-}
-
-export interface Tile extends Record<Direction, Set<TileValue>> {
-	value: TileValue;
 }

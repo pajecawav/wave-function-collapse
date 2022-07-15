@@ -7,7 +7,7 @@ export function Button({ className, children, ...props }: ButtonProps) {
 	return (
 		<button
 			className={cn(
-				"rounded-md px-3 py-1 transition-[background-color] bg-neutral-200 active:enabled:bg-neutral-300 disabled:opacity-75",
+				"rounded-md px-3 py-1 transition-[background-color] bg-neutral-200 active:enabled:bg-neutral-300 disabled:opacity-75 disabled:cursor-not-allowed",
 				className
 			)}
 			{...props}
