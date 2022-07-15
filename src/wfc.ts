@@ -41,6 +41,8 @@ export const wfcStepAtom = atom(null, (get, set) => {
 	const grid = get(gridAtom);
 	const cells = grid.cells;
 
+	grid.generation++;
+
 	let iterations = 0;
 	while (true) {
 		const nonCollapsedCellIndexes = cells
@@ -72,7 +74,10 @@ export const wfcStepAtom = atom(null, (get, set) => {
 		iterations++;
 	}
 
-	set(gridAtom, { ...grid, cells: cells.slice() });
+	set(gridAtom, {
+		...grid,
+		cells: cells.slice(),
+	});
 });
 
 export const resetGridAtom = atom(null, (get, set) => {
@@ -82,7 +87,7 @@ export const resetGridAtom = atom(null, (get, set) => {
 function createGrid(size: number): Grid {
 	const cells = Array.from({ length: size * size }, createEmptyCell);
 
-	const grid: Grid = { cells, size };
+	const grid: Grid = { cells, size, generation: 0 };
 
 	// TODO: how to properly implement initial propagation?
 	for (let i = 0; i < size; i++) {
@@ -93,7 +98,7 @@ function createGrid(size: number): Grid {
 }
 
 function createEmptyCell(): Cell {
-	return { tile: null, options: TILES.slice() };
+	return { tile: null, options: TILES.slice(), lastUpdated: -1 };
 }
 
 export function isCellCollapsed(cell: Cell): boolean {
@@ -133,6 +138,7 @@ function propagate(grid: Grid, index: number) {
 
 		if (northCell.options.length !== optionsCount) {
 			propagate(grid, northIndex);
+			northCell.lastUpdated = grid.generation;
 		}
 	}
 
@@ -152,6 +158,7 @@ function propagate(grid: Grid, index: number) {
 
 		if (eastCell.options.length !== optionsCount) {
 			propagate(grid, eastIndex);
+			eastCell.lastUpdated = grid.generation;
 		}
 	}
 
@@ -170,6 +177,7 @@ function propagate(grid: Grid, index: number) {
 
 		if (southCell.options.length !== optionsCount) {
 			propagate(grid, southIndex);
+			southCell.lastUpdated = grid.generation;
 		}
 	}
 
@@ -189,6 +197,7 @@ function propagate(grid: Grid, index: number) {
 
 		if (westCell.options.length !== optionsCount) {
 			propagate(grid, westIndex);
+			westCell.lastUpdated = grid.generation;
 		}
 	}
 }
@@ -204,11 +213,13 @@ function xyToIndex(x: number, y: number, size: number): number {
 export interface Grid {
 	cells: ReadonlyArray<Cell>;
 	size: number;
+	generation: number;
 }
 
 export interface Cell {
 	tile: Tile | null;
 	options: Tile[];
+	lastUpdated: number;
 }
 
 export interface Tile {

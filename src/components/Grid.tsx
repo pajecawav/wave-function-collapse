@@ -1,12 +1,26 @@
 import { useAtom } from "jotai";
-import { showPossibilitiesAtom } from "../settings";
+import { showPossibilitiesAtom, showUpdatesAtom } from "../settings";
 import { cn } from "../utils";
-import { gridAtom } from "../wfc";
+import { Cell, gridAtom } from "../wfc";
+
+function getCellClassNames(cell: Cell, generation: number | null): string {
+	if (cell.tile) {
+		return "bg-green-200";
+	} else if (cell.options.length === 0) {
+		return "bg-red-100";
+	} else if (cell.lastUpdated === generation) {
+		return "bg-orange-100/90";
+	}
+	return "bg-neutral-100 text-neutral-600";
+}
 
 export function Grid() {
 	const [grid] = useAtom(gridAtom);
 
 	const [showPossibilities] = useAtom(showPossibilitiesAtom);
+	const [showUpdates] = useAtom(showUpdatesAtom);
+
+	const generation = showUpdates ? grid.generation : null;
 
 	return (
 		<div
@@ -20,12 +34,8 @@ export function Grid() {
 			{grid.cells.map((cell, i) => (
 				<div
 					className={cn(
-						"grid items-center text-center rounded-md",
-						cell.tile
-							? "bg-green-200"
-							: cell.options.length === 0
-							? "bg-red-100"
-							: "bg-neutral-100 text-neutral-600"
+						"grid items-center text-center rounded-md transition-colors duration-200",
+						getCellClassNames(cell, generation)
 					)}
 					key={i}
 				>

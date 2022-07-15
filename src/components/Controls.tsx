@@ -6,6 +6,7 @@ import {
 	gridSizeAtom,
 	runningAtom,
 	showPossibilitiesAtom,
+	showUpdatesAtom,
 	stepIntervalAtom,
 } from "../settings";
 import { cn } from "../utils";
@@ -43,6 +44,7 @@ export function Controls() {
 	const [showPossibilities, setShowPossibilities] = useAtom(
 		showPossibilitiesAtom
 	);
+	const [showUpdates, setShowUpdates] = useAtom(showUpdatesAtom);
 	const [stepInterval, setStepInterval] = useAtom(stepIntervalAtom);
 
 	useEffect(() => {
@@ -83,18 +85,27 @@ export function Controls() {
 					Show possibilities
 				</label>
 
+				<label className="block">
+					<input
+						type="checkbox"
+						checked={showUpdates}
+						onChange={e => setShowUpdates(e.currentTarget.checked)}
+					/>{" "}
+					Show updates
+				</label>
+
 				<label>
 					Grid size{" "}
 					<input
 						className="w-full"
 						type="range"
-						min="4"
+						min="2"
 						max="20"
 						value={gridSize}
 						onChange={e => setGridSize(+e.currentTarget.value)}
 					/>
 					<div className="text-neutral-600 flex justify-between">
-						<span>4</span>
+						<span>2</span>
 						<span>20</span>
 					</div>
 				</label>
