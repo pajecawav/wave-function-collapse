@@ -1,6 +1,9 @@
 import { ComponentChildren } from "preact";
 import { Tile } from "./types";
 
+// HACK: scale each cell to fix issues with subpixel rendering
+const MAGIC_SCALE = 1.05;
+
 const green = "green";
 const brown = "#9b7653";
 const strokeWidth = 5;
@@ -115,7 +118,9 @@ function Container({
 		<svg
 			viewBox="0 0 100 100"
 			xmlns="http://www.w3.org/2000/svg"
-			style={{ transform: `rotate(${rotation}deg)` }}
+			style={{
+				transform: `rotate(${rotation}deg) scale(${MAGIC_SCALE})`,
+			}}
 		>
 			{children}
 		</svg>
