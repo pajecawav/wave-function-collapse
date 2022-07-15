@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-export const INITIAL_GRID_SIZE = 10;
+export const INITIAL_GRID_SIZE = 12;
 
 export const runningAtom = atom(false);
 export const gridSizeAtom = atom(INITIAL_GRID_SIZE);

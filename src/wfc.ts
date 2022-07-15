@@ -38,49 +38,47 @@ export const TILES: Tile[] = [
 
 export const gridAtom = atom<Grid>(createGrid(INITIAL_GRID_SIZE));
 
-export const wfcStepAtom = atom(
-	null,
-	(get, set, target: number | null = null) => {
-		const grid = get(gridAtom);
-		const cells = grid.cells;
+export const wfcStepAtom = atom(null, (get, set, target: number | null) => {
+	const grid = get(gridAtom);
+	const cells = grid.cells;
 
-		grid.generation++;
+	grid.generation++;
 
-		let iterations = 0;
-		while (true) {
-			const nonCollapsedCellIndexes = cells
-				.map((_, i) => i)
-				.filter(i => !isCellCollapsed(cells[i]));
+	let iterations = 0;
+	while (true) {
+		const nonCollapsedCellIndexes = cells
+			.map((_, i) => i)
+			.filter(i => !isCellCollapsed(cells[i]));
 
-			const min = Math.min(
-				...nonCollapsedCellIndexes.map(i => cells[i].options.length)
-			);
-			const candidateIndexes = nonCollapsedCellIndexes.filter(
-				i => cells[i].options.length === min
-			);
+		const min = Math.min(
+			...nonCollapsedCellIndexes.map(i => cells[i].options.length)
+		);
+		const candidateIndexes = nonCollapsedCellIndexes.filter(
+			i => cells[i].options.length === min
+		);
 
-			if ((iterations > 0 && min > 1) || candidateIndexes.length === 0) {
-				break;
-			}
-
-			// collapse cell
-			const index = target ?? choice(candidateIndexes);
-			const cell = cells[index];
-			collapseCell(cell);
-
-			// propagate changes
-			propagate(grid, index);
-
-			iterations++;
-			target = null;
+		if ((iterations > 0 && min > 1) || candidateIndexes.length === 0) {
+			break;
 		}
 
-		set(gridAtom, {
-			...grid,
-			cells: cells.slice(),
-		});
+		// collapse cell
+		const index =
+			iterations === 0 && target ? target : choice(candidateIndexes);
+		const cell = cells[index];
+		collapseCell(cell);
+
+		// propagate changes
+		propagate(grid, index);
+
+		iterations++;
+		target = null;
 	}
-);
+
+	set(gridAtom, {
+		...grid,
+		cells: cells.slice(),
+	});
+});
 
 export const resetGridAtom = atom(null, (get, set) => {
 	set(gridAtom, createGrid(get(gridSizeAtom)));
