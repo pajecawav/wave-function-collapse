@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { gridSizeAtom, INITIAL_GRID_SIZE } from "./settings";
+import { choice } from "./utils";
 
 export type TileValue = "A" | "B" | "C" | "D";
 
@@ -37,48 +38,49 @@ export const TILES: Tile[] = [
 
 export const gridAtom = atom<Grid>(createGrid(INITIAL_GRID_SIZE));
 
-export const wfcStepAtom = atom(null, (get, set) => {
-	const grid = get(gridAtom);
-	const cells = grid.cells;
+export const wfcStepAtom = atom(
+	null,
+	(get, set, target: number | null = null) => {
+		const grid = get(gridAtom);
+		const cells = grid.cells;
 
-	grid.generation++;
+		grid.generation++;
 
-	let iterations = 0;
-	while (true) {
-		const nonCollapsedCellIndexes = cells
-			.map((_, i) => i)
-			.filter(i => !isCellCollapsed(cells[i]));
+		let iterations = 0;
+		while (true) {
+			const nonCollapsedCellIndexes = cells
+				.map((_, i) => i)
+				.filter(i => !isCellCollapsed(cells[i]));
 
-		const min = Math.min(
-			...nonCollapsedCellIndexes.map(i => cells[i].options.length)
-		);
-		const candidateIndexes = nonCollapsedCellIndexes.filter(
-			i => cells[i].options.length === min
-		);
+			const min = Math.min(
+				...nonCollapsedCellIndexes.map(i => cells[i].options.length)
+			);
+			const candidateIndexes = nonCollapsedCellIndexes.filter(
+				i => cells[i].options.length === min
+			);
 
-		if ((iterations > 0 && min > 1) || candidateIndexes.length === 0) {
-			break;
+			if ((iterations > 0 && min > 1) || candidateIndexes.length === 0) {
+				break;
+			}
+
+			// collapse cell
+			const index = target ?? choice(candidateIndexes);
+			const cell = cells[index];
+			collapseCell(cell);
+
+			// propagate changes
+			propagate(grid, index);
+
+			iterations++;
+			target = null;
 		}
 
-		// collapse cell
-		const index =
-			candidateIndexes[
-				Math.floor(Math.random() * candidateIndexes.length)
-			];
-		const cell = cells[index];
-		collapseCell(cell);
-
-		// propagate changes
-		propagate(grid, index);
-
-		iterations++;
+		set(gridAtom, {
+			...grid,
+			cells: cells.slice(),
+		});
 	}
-
-	set(gridAtom, {
-		...grid,
-		cells: cells.slice(),
-	});
-});
+);
 
 export const resetGridAtom = atom(null, (get, set) => {
 	set(gridAtom, createGrid(get(gridSizeAtom)));
@@ -106,7 +108,7 @@ export function isCellCollapsed(cell: Cell): boolean {
 }
 
 function collapseCell(cell: Cell) {
-	const tile = cell.options[Math.floor(Math.random() * cell.options.length)];
+	const tile = choice(cell.options);
 	cell.tile = tile;
 	cell.options = [];
 }

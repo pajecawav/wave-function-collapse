@@ -26,8 +26,8 @@ function NavLink({
 		<Link
 			href={href}
 			className={cn(
-				"px-2 py-1 rounded-md transition-colors hover:bg-nuetral-100",
-				match && "bg-neutral-100"
+				"px-2 py-1 rounded-md transition-colors hover:bg-neutral-200",
+				match && "bg-neutral-200"
 			)}
 		>
 			{children}
@@ -53,7 +53,7 @@ export function Controls() {
 		let id: number;
 
 		function tick() {
-			step();
+			step(null);
 			id = setTimeout(tick, stepInterval);
 		}
 
@@ -131,7 +131,9 @@ export function Controls() {
 				<Button onClick={() => setRunning(!running)}>
 					{running ? "Stop" : "Run"}
 				</Button>
-				<Button onClick={() => step()}>Step</Button>
+				<Button onClick={() => step(null)} disabled={running}>
+					Step
+				</Button>
 				<Button onClick={() => reset()}>Reset</Button>
 			</div>
 		</div>

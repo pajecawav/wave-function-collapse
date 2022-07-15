@@ -1,7 +1,11 @@
-import { useAtom } from "jotai";
-import { showPossibilitiesAtom, showUpdatesAtom } from "../settings";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+	runningAtom,
+	showPossibilitiesAtom,
+	showUpdatesAtom,
+} from "../settings";
 import { cn } from "../utils";
-import { Cell, gridAtom } from "../wfc";
+import { Cell, gridAtom, isCellCollapsed, wfcStepAtom } from "../wfc";
 
 function getCellClassNames(cell: Cell, generation: number | null): string {
 	if (cell.tile) {
@@ -17,8 +21,11 @@ function getCellClassNames(cell: Cell, generation: number | null): string {
 export function Grid() {
 	const [grid] = useAtom(gridAtom);
 
-	const [showPossibilities] = useAtom(showPossibilitiesAtom);
-	const [showUpdates] = useAtom(showUpdatesAtom);
+	const running = useAtomValue(runningAtom);
+	const step = useSetAtom(wfcStepAtom);
+
+	const showPossibilities = useAtomValue(showPossibilitiesAtom);
+	const showUpdates = useAtomValue(showUpdatesAtom);
 
 	const generation = showUpdates ? grid.generation : null;
 
@@ -32,17 +39,19 @@ export function Grid() {
 			}}
 		>
 			{grid.cells.map((cell, i) => (
-				<div
+				<button
 					className={cn(
 						"grid items-center text-center rounded-md transition-colors duration-200",
 						getCellClassNames(cell, generation)
 					)}
+					disabled={running || isCellCollapsed(cell)}
+					onClick={() => step(i)}
 					key={i}
 				>
 					{cell.tile?.value ??
 						(showPossibilities &&
 							cell.options.map(o => o.value).join(""))}
-				</div>
+				</button>
 			))}
 		</div>
 	);
