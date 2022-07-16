@@ -38,7 +38,9 @@ export const wfcStepAtom = atom(null, (get, set, target: number | null) => {
 
 		// collapse cell
 		const index =
-			iterations === 0 && target ? target : choice(candidateIndexes);
+			iterations === 0 && target !== null
+				? target
+				: choice(candidateIndexes);
 		const cell = cells[index];
 		collapseCell(cell);
 
