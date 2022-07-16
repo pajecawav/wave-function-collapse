@@ -1,29 +1,38 @@
 import { TILES } from "../tiles";
-import { reversed } from "../utils";
 import { Tile } from "../types";
+import { reversed } from "../utils";
 
 function TileVisualization({ tile }: { tile: Tile }) {
 	const Component = tile.Component;
 
 	return (
 		<div className="p-2 rounded-md border border-zinc-600">
-			<div className="tracking-widest relative aspect-square rounded-md grid place-items-center">
+			<div className="mb-4 tracking-widest relative aspect-square rounded-md grid place-items-center">
 				<div className="w-3/5 h-3/5">
 					{<Component rotation={tile.rotation} />}
 				</div>
 				<span className="absolute top-0">{tile.north}</span>
-				<span className="absolute right-0 rotate-90">{tile.east}</span>
+				<span className="absolute right-0 [writing-mode:vertical-lr]">
+					{tile.east}
+				</span>
 				<span className="absolute bottom-0">
 					{reversed(tile.south)}
 				</span>
-				<span className="absolute left-0 -rotate-90">{tile.west}</span>
+				<span className="absolute left-0 [writing-mode:vertical-rl] rotate-180">
+					{tile.west}
+				</span>
 			</div>
 
-			<div className="mt-4 text-center break-all">
-				{tile.Component.name}
-			</div>
-			{tile.rotation !== 0 && (
-				<div className="text-center">{tile.rotation}deg</div>
+			{/* function name is minified in production build so it's practically useless */}
+			{import.meta.env.DEV && (
+				<>
+					<div className="text-center break-all">
+						{tile.Component.name}
+					</div>
+					{tile.rotation !== 0 && (
+						<div className="text-center">{tile.rotation}deg</div>
+					)}
+				</>
 			)}
 		</div>
 	);
