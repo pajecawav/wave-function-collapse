@@ -31,7 +31,7 @@ function TileVisualization({ tile }: { tile: Tile }) {
 
 export function TilesList() {
 	return (
-		<div className="p-8 grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] justify-center gap-8">
+		<div className="overflow-y-auto max-h-full p-8 grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] justify-center gap-8">
 			{TILES.map((tile, i) => (
 				<TileVisualization tile={tile} key={i} />
 			))}
